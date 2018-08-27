@@ -1,0 +1,45 @@
+---
+- name: storage setup
+  hosts: all
+
+  tasks:
+  - name: partition table
+    parted:
+      device: /dev/sdb
+      number: 1
+      state: present
+      flags: [ lvm ]
+ 
+  - name: volume group create
+    lvg:
+      vg: datavg
+      pvs: /dev/sdb1
+
+  - name: thinpool
+    lvol:
+      lv: thinlv
+      vg: datavg
+      opts: --type thin-pool
+      size: 335G
+
+  - name: data lv
+    lvol:
+      lv: datalv
+      vg: datavg
+      size: 300G
+      thinpool: thinlv
+  
+  - name: filesystem
+    filesystem:
+      fstype: xfs
+      device: /dev/datavg/datalv
+
+  - name: mount point
+    mount:
+      fstype: xfs
+      src: /dev/datavg/datalv
+      path: /data
+      state: mounted
+      passno: 1
+
+...

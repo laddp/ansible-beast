@@ -1,0 +1,66 @@
+---
+- name: HP setup
+  hosts: all
+
+  vars:
+    rpms:
+      - hpadu-9.40-12.0.x86_64.rpm
+      - hpdiags-9.64.1262-1202.linux.x86_64.rpm
+      - hp-firmware-ilo2-2.33-1.1.i386.rpm
+      - hp-firmware-smartarray-14ef73e580-6.64-2.x86_64.rpm
+      - hp-health-10.80-1855.27.rhel6.x86_64.rpm
+      - hponcfg-4.6.0-0.x86_64.rpm
+      - hpsmh-7.6.1-9.x86_64.rpm
+      - ssa-2.65-7.0.x86_64.rpm
+      - ssacli-2.65-7.0.x86_64.rpm
+      - sum-8.1.0-14.rhel7.x86_64.rpm
+
+  tasks:
+  - name: copy packages
+    copy:
+      src: hp-rpms/
+      dest: /tmp/hp-rpms/
+
+  - name: package installation
+    yum:
+      name: "/tmp/hp-rpms/{{ item }}"
+      state: latest
+    with_items: "{{ rpms }}"
+
+  - name: firewall rules
+    firewalld:
+      port: "{{ item }}"
+      state: enabled
+      immediate: yes
+      permanent: yes
+    with_items:
+      - "2301/tcp"
+      - "2381/tcp"
+
+  - name: services
+    service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - hpsmhd
+      - hp-health
+      - hp-asrd
+
+  - name: check for firmware updates
+    command: "smartupdate list"
+    register: firmware_list
+
+  - debug: msg="{{ firmware_list.stdout_lines }}"
+
+# for hp-firmware-ilo2 need to run:
+# /usr/lib/i386-linux-gnu/hp-firmware-ilo2-2.33-1.1/hpsetup
+#  -- OR --
+# /usr/lib/i386-linux-gnu/hp-scexe-compat/CP035238.scexe
+#
+# not indepotent... :(
+#
+
+# for hp-firmware-smartarray need to run:
+# /usr/lib/x86_64-linux-gnu/hp-firmware-smartarray-14ef73e580-6.64-2/hpsetup
+...

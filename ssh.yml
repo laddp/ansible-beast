@@ -1,0 +1,26 @@
+---
+- name: ssh setup
+  hosts: all
+
+  tasks:
+  - name: disable passwordless root ssh
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: "^\\s*PermitRootLogin "
+      line: "PermitRootLogin without-password"
+      insertafter: "^#\\s*PermitRootLogin"
+    notify: restart-sshd
+
+  - name: root ssh key
+    authorized_key:
+      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDq47bMVsjkxsCc9CZdh6NXouVezxMjtiis2TEZNM7w9whQsEcVR8qL4e8kXCVnuTRKWvWSXK6lYSytiHvjqt7NYDTiD0FAfnbQHuNqgUGiQzuBdvOSorERRHG8WVcBYYSUCPbfauKXFRL2fpJmPlUiut8C0e+1tTfwAqf95dqRsIK7uUwp6mzm92SRyv5ehNfeZPwaccsFDGdHnJtBM/8XmLn+Q0p3sUIydRUml3B87/ZkrdkKQxCzY2OMoHl52iomnQAEz4E6Z65arRTuXef7gsbQTO0CEEBnQL47a8R4uQnyUJhTBV6tIoYOr3yCa+oRWR6XRJG/Qj3oocmYV2/f pladd@pladd.remote.csb"
+      user: root
+
+  - name: pladd ssh key
+    authorized_key:
+      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDq47bMVsjkxsCc9CZdh6NXouVezxMjtiis2TEZNM7w9whQsEcVR8qL4e8kXCVnuTRKWvWSXK6lYSytiHvjqt7NYDTiD0FAfnbQHuNqgUGiQzuBdvOSorERRHG8WVcBYYSUCPbfauKXFRL2fpJmPlUiut8C0e+1tTfwAqf95dqRsIK7uUwp6mzm92SRyv5ehNfeZPwaccsFDGdHnJtBM/8XmLn+Q0p3sUIydRUml3B87/ZkrdkKQxCzY2OMoHl52iomnQAEz4E6Z65arRTuXef7gsbQTO0CEEBnQL47a8R4uQnyUJhTBV6tIoYOr3yCa+oRWR6XRJG/Qj3oocmYV2/f pladd@pladd.remote.csb"
+      user: pladd
+
+  handlers:
+    - name: restart-sshd
+      service: name=sshd state=restarted

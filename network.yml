@@ -1,0 +1,36 @@
+---
+- name: Settings for beast server
+  hosts: all
+
+  tasks:
+  - name: install needed network manager libs
+    yum:
+      name: '{{ item }}'
+      state: latest
+    with_items:
+      - NetworkManager
+      - dbus
+      - NetworkManager-glib
+
+  - name: network team
+    nmcli:
+      type: team
+      conn_name: beast-team
+      state: present
+
+  - name: network slaves
+    nmcli:
+      type: team-slave
+      master: beast-team
+      conn_name: "{{ item.name }}"
+      ifname:    "{{ item.interface }}"
+      state: present
+    with_items:
+      - name: slave1
+        interface: enp65s2
+      - name: slave2
+        interface: enp81s0f0
+      - name: slave3
+        interface: enp81s0f1
+
+...
