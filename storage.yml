@@ -42,4 +42,12 @@
       state: mounted
       passno: 1
 
+  - name: vms dir
+    file:
+      path: /data/VirtFastStorage
+      state: directory
+      owner: pladd
+      group: pladd
+      mode: "u=rwx,g=rx,o=rx"
+
 ...

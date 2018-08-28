@@ -15,6 +15,10 @@
       username: "{{ subscription_manager_id }}"
       password: "{{ subscription_manager_pw }}"
       pool_ids: "8a85f9833e1404a9013e3cddf95a0599" # Employee SKU
+      # pool_ids: "8a85f9815a1e73d7015a1ea518f82518" # Virt DC
+      #pool_ids:
+      #  - "8a85f9833e1404a9013e3cddf95a0599"
+      #  - "8a85f9815a1e73d7015a1ea518f82518": 2
 
   - name: repositories
     rhsm_repository:
@@ -48,7 +52,9 @@
         - traceroute
         - wireshark
         - bind-utils # for dig
-
+        - rsync
+        - git
+        - sysstat
       state: latest
 
 ...

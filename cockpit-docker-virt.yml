@@ -11,6 +11,7 @@
         - qemu-kvm
         - libvirt
         - virt-install
+        - libguestfs-tools-c
         - cockpit-machines
         - cockpit-packagekit
         - cockpit-shell

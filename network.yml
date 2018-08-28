@@ -33,4 +33,10 @@
       - name: slave3
         interface: enp81s0f1
 
+  - name: adjust metrics to prefer team interface
+    command: nmcli connection modify beast-team ipv4.route-metric 100
+
+  - name: adjust metrics to prefer team interface
+    command: nmcli connection modify enp65s1 ipv4.route-metric 300
+
 ...
